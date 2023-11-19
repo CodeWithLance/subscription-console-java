@@ -4,17 +4,23 @@ import java.util.Date;
 import java.util.Scanner;
 import helpers.CSVHelper;
 import plans.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Main {
 
 	private Scanner scan = new Scanner(System.in);
 	private CSVHelper csvHelper = new CSVHelper();
 	private Subscription subscription = new Subscription(csvHelper);
+
+	private static final String EMAIL_REGEX = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+   	private static final Pattern pattern = Pattern.compile(EMAIL_REGEX);
 	
 	public static void main(String[] args) {
 		new Main();
 	}
-	
+
+	//Opening prompt - User will choose between log in and register
 	public Main() {		
 		System.out.println("Welcome to Subscription Management System");
 		System.out.println("What would you like to do?");
@@ -36,7 +42,8 @@ public class Main {
 				break;
 		}
 	}
-	
+
+	//Log in prompt - Verify wether the user has existing info in the csv database or not
 	private void login() {
 		System.out.print("Enter your email: ");
 		var email = scan.nextLine();
@@ -49,7 +56,14 @@ public class Main {
 		
 		promptUserLoggedIn(customer);
 	}
-	
+
+	//To validate wether the email input is in correct format
+	public static boolean isValidEmail(String email){
+		Matcher matcher = pattern.matcher(email);
+		return matcher.matches();
+	}
+
+	//Register prompt - This will allow the user to create a simple account and will update the csv database
 	private void register() {
 		var customer = new Customer(csvHelper);
 		
@@ -68,7 +82,8 @@ public class Main {
 		System.out.println("3 - Gold Plan");
 		var plan = scan.nextLine();
 		BasePlan subType = null;
-		
+
+		//The user can choose their subscription plan for the application
 		switch(plan) {
 		case "1":
 			subType = new StandardPlan();
@@ -92,7 +107,8 @@ public class Main {
 		var date = scan.nextLine();
 		LocalDate currentDate = LocalDate.now();
 		LocalDate subDue = null;
-		
+
+		//This will automatically calculate when is the end date of the subscription
 		switch(date) {
 		case "1":
 			subDue = currentDate.plusWeeks(1);
@@ -117,7 +133,8 @@ public class Main {
 		
 		promptUserLoggedIn(customer);
 	}
-	
+
+	//This is a method that will allow the user to the main page and access the application features
 	private void promptUserLoggedIn(Customer customer) {
 		System.out.println("Hello " + customer.getCustomerName() + "!");
 		System.out.println("What would you like to do?");
